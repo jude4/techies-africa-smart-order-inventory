@@ -136,114 +136,93 @@ curl -X POST http://127.0.0.1:8000/api/v1/user/register \
 
 # 2) Login
 
+````bash
+curl -X POST http://127.0.0.1:8000/api/v1/user/login \
+  # Smart Order & Inventory — API (Laravel)
+
+  This repository contains a small Laravel API for managing products, orders, and inventory for the Techies Africa developer test.
+
+  Highlights
+  - Product CRUD with image upload
+  - Bulk import (CSV, optional .xlsx with package)
+  - Order placement with stock validation and stock transaction logging
+  - Simple admin & user API endpoints secured with Laravel Sanctum
+
+  Quick start
+  1. Install dependencies and copy environment:
+
+  ```bash
+  composer install
+  cp .env.example .env
+  php artisan key:generate
+````
+
+2. Configure your DB in `.env`, then run migrations and seeders:
+
+```bash
+php artisan migrate --seed
+php artisan storage:link   # optional, for product images
+```
+
+3. Run tests (project includes feature tests):
+
+```bash
+./vendor/bin/phpunit --color=always
+```
+
+API notes
+
+-   User (customer) endpoints:
+
+    -   POST /api/v1/user/register — register
+    -   POST /api/v1/user/login — login (returns Bearer token)
+    -   POST /api/v1/user/orders — place an order (authenticated)
+    -   GET /api/v1/user/orders — list user's orders (authenticated)
+
+-   Admin endpoints (prefix `/api/v1/admin`):
+    -   POST /api/v1/admin/login — admin login (returns Bearer token)
+    -   GET/POST/PUT/DELETE /api/v1/admin/products — product CRUD (authenticated admin)
+    -   POST /api/v1/admin/products/upload-excel — import products (CSV or .xlsx if package installed)
+    -   GET /api/v1/admin/reports/low-stock
+    -   GET /api/v1/admin/reports/sales-summary
+
+Order behavior
+
+-   Orders validate stock for each product and will return an error if stock is insufficient.
+-   A discount of 10% is applied automatically when the order subtotal exceeds 500.
+
+Excel / CSV import
+
+-   The importer accepts CSV by default. If you need .xlsx support, install `maatwebsite/excel`:
+
+```bash
+composer require maatwebsite/excel
+```
+
+Example cURL (login & create order)
+
+1. User login
+
 ```bash
 curl -X POST http://127.0.0.1:8000/api/v1/user/login \
   -H "Content-Type: application/json" \
   -d '{"email":"alice@example.com","password":"password"}'
 ```
 
-# 3) Create product (multipart/form-data)
+2. Create an order (replace <token> and <product-id>)
 
 ```bash
-curl -X POST http://127.0.0.1:8000/api/v1/admin/products \
-  -H "Authorization: Bearer <token>" \
-  -F "name=New Product" \
-  -F "sku=NP-001" \
-  -F "price=49.99" \
-  -F "quantity=10" \
-  -F "image=@/path/to/image.jpg"
-```
-
-# 4) Bulk import (CSV or XLSX)
-
-```bash
-curl -X POST http://127.0.0.1:8000/api/v1/admin/products/upload-excel \
-  -H "Authorization: Bearer <token>" \
-  -F "file=@/path/to/products.csv"
-```
-
-# 5) Create an order
-
-```bash
-curl -X POST http://127.0.0.1:8000/api/v1/admin/orders \
+curl -X POST http://127.0.0.1:8000/api/v1/user/orders \
   -H "Authorization: Bearer <token>" \
   -H "Content-Type: application/json" \
-  -d '{"items":[{"product_id":"<product-uuid>","quantity":2}]}'
+  -d '{"items":[{"product_id":"<product-id>","quantity":2}]}'
 ```
 
-## Notes & next steps
+Want changes?
 
--   Role-based access (admin vs user) is possible and `spatie/laravel-permission` is included in composer.json; we can wire roles and permission middleware if you want the bonus.
--   If you prefer orders to remain `pending` without decrementing stock, we should implement a reservation flow instead. Currently orders can be created as `pending` but the implementation as shipped decrements stock at creation time (reserving). Tell me which behavior you'd like and I will adjust.
+-   If you prefer orders to be created as `pending` (no stock decrement) vs reserved at creation, tell me and I will implement a reservation flow.
+-   I can also add role-based middleware for admin routes using `spatie/laravel-permission` already present in composer.json.
 
-## Contact / support
+---
 
-If you want me to continue, tell me whether you want:
-
-1. Orders created as `pending` but stock NOT decremented (needs reservation implementation).
-2. Orders `pending` but still decrement stock to reserve it (simple change to status only).
-3. I should install `maatwebsite/excel` to fully support .xlsx imports (I can add composer suggestions and a patch).
-
-I'll proceed on your confirmation.
-
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
-
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
-
-## About Laravel
-
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
-
--   [Simple, fast routing engine](https://laravel.com/docs/routing).
--   [Powerful dependency injection container](https://laravel.com/docs/container).
--   Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
--   Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
--   Database agnostic [schema migrations](https://laravel.com/docs/migrations).
--   [Robust background job processing](https://laravel.com/docs/queues).
--   [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
-
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
-
-## Learning Laravel
-
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
-
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-## Laravel Sponsors
-
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
-
-### Premium Partners
-
--   **[Vehikl](https://vehikl.com)**
--   **[Tighten Co.](https://tighten.co)**
--   **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
--   **[64 Robots](https://64robots.com)**
--   **[Curotec](https://www.curotec.com/services/technologies/laravel)**
--   **[DevSquad](https://devsquad.com/hire-laravel-developers)**
--   **[Redberry](https://redberry.international/laravel-development)**
--   **[Active Logic](https://activelogic.com)**
-
-## Contributing
-
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Maintainers: update `.env` for DB credentials and run migrations before testing. If you want, I can also add a short CONTRIBUTING section or example Postman collection.
