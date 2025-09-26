@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\User\AuthController;
 use App\Http\Controllers\User\OrderController;
 use Illuminate\Support\Facades\Route;
@@ -18,5 +19,5 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 // Public product browsing for customers
-Route::get('/products', [\App\Http\Controllers\Admin\ProductController::class, 'index']);
-Route::get('/products/{id}', [\App\Http\Controllers\Admin\ProductController::class, 'show']);
+Route::get('/products', [ProductController::class, 'index']);
+Route::get('/products/{id}', [ProductController::class, 'show']);
