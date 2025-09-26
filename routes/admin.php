@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\AuthController as AdminAuthController;
+use App\Http\Controllers\Admin\OrderController;
 
 // Admin login (public)
 Route::post('/login', [AdminAuthController::class, 'login']);
@@ -13,8 +14,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::apiResource('products', ProductController::class);
     Route::post('products/upload-excel', [ProductController::class, 'uploadExcel']);
 
-    // Orders (kept for compatibility / tests)
-    Route::apiResource('orders', \App\Http\Controllers\OrderController::class);
+
+    Route::apiResource('orders', OrderController::class);
 
     // Reports
     Route::get('reports/low-stock', [ReportController::class, 'lowStock']);
