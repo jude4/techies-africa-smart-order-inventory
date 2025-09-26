@@ -217,12 +217,3 @@ curl -X POST http://127.0.0.1:8000/api/v1/user/orders \
   -H "Content-Type: application/json" \
   -d '{"items":[{"product_id":"<product-id>","quantity":2}]}'
 ```
-
-Want changes?
-
--   If you prefer orders to be created as `pending` (no stock decrement) vs reserved at creation, tell me and I will implement a reservation flow.
--   I can also add role-based middleware for admin routes using `spatie/laravel-permission` already present in composer.json.
-
----
-
-Maintainers: update `.env` for DB credentials and run migrations before testing. If you want, I can also add a short CONTRIBUTING section or example Postman collection.
