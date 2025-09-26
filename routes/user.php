@@ -16,3 +16,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/orders', [OrderController::class, 'index']);
     Route::get('/orders/{id}', [OrderController::class, 'show']);
 });
+
+// Public product browsing for customers
+Route::get('/products', [\App\Http\Controllers\Admin\ProductController::class, 'index']);
+Route::get('/products/{id}', [\App\Http\Controllers\Admin\ProductController::class, 'show']);
