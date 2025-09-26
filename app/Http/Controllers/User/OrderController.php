@@ -10,16 +10,16 @@ use Illuminate\Http\Request;
 
 class OrderController extends Controller
 {
-    public function __construct(private OrderService $service) {}
+    public function __construct(private OrderService $orderService) {}
 
     public function index(Request $request)
     {
-        return $this->service->listForUser($request->user());
+        return $this->orderService->listForUser($request->user());
     }
 
     public function show(string $id)
     {
-        $order = $this->service->find($id);
+        $order = $this->orderService->find($id);
         if (!$order) return ResponseHelper::error('Order not found', [], 404);
         return ResponseHelper::success($order, 'Order fetched');
     }
@@ -28,6 +28,6 @@ class OrderController extends Controller
     {
         $data = $request->validated();
         $user = $request->user();
-        return $this->service->createOrder($user, $data['items']);
+        return $this->orderService->createOrder($user, $data['items']);
     }
 }
